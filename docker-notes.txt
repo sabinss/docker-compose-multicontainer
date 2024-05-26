@@ -1,0 +1,47 @@
+doker run -it <docker-container-id> bash
+
+
+docker system prune -a
+docker run -it --init --publish 3001:3001 <nameofcontainer>
+
+1 suppose i run container 1 if i have to check env that my container is using follow this steps:
+docker run -it <container-name> bash
+type env inside container
+
+
+## volume command
+
+docker run -it --init -p 3001:3001 -v "$(pwd)":/developer/nodejs/api-gateway api-gateway:latest
+
+
+## Use case of volumne persistance
+1. when we copy nodemoules from host machie to container there will be package versioning issue
+
+
+cmd:
+1. docker volume create api-gateway-node-modules
+2. docker run -it --init -p 3001:3001 -v "$(pwd)":/developer/nodejs/api-gateway 
+-v api-gateway-node-modules://developer/nodejs/api-gateway/node_modules
+ api-gateway:latest
+3.2. docker run -it --init -p 3001:3001 -v "$(pwd)":/developer/nodejs/api-gateway 
+-v api-gateway-node-modules://developer/nodejs/api-gateway/node_modules
+ api-gateway:latest bash
+ ---------------
+--init is used to control the docker process from the host
+bash will give access the bash shell of docker container
+
+note:
+- Problem with node modules
+ -  nodemodules created in host , if we try to persist that nodemodule using volume in container
+ it will give versioning issue
+ - node modules created in mac or linux and usng there in container will have difference
+ - so the solution is to create a volume to persist nodemodules that will be independent of container
+
+
+# communicatin between docker container
+
+1. docker create network microservice-network
+2. For Service A: run container and give --name Service_A
+    e.g docker run -it --name api_gateway --network microservice-network --init -p 3001:3001 -v "$(pwd)":/developer/nodejs/api-gateway 
+-v api-gateway-node-modules://developer/nodejs/api-gateway/node_modules
+ api-gateway:latest 
